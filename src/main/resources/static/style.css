@@ -1,50 +1,8 @@
-body {
-  font-family: sans-serif;
-  margin: 10px;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
-form input, form select, form textarea, form button {
-  margin: 5px 0;
-  padding: 8px;
-  font-size: 1rem;
-}
-
-.category-folder {
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.folder-header {
-  background-color: #f0f0f0;
-  padding: 8px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.folder-content {
-  display: block;
-  padding: 8px;
-}
-
-.memory-item {
-  border-left: 4px solid gray;
-  padding: 6px;
-  margin-bottom: 6px;
-  border-radius: 4px;
-}
-
-.memory-date, .memory-title, .memory-message, .memory-author {
-  margin: 2px 0;
-}
-
+body { font-family: sans-serif; margin: 10px; }
+form { display: flex; flex-direction: column; margin-bottom: 20px; }
+form input, form select, form textarea, form button { margin: 5px 0; padding: 8px; font-size: 1rem; }
+.memory-item { border-left: 4px solid gray; padding: 6px; margin-bottom: 6px; border-radius: 4px; }
+.memory-date, .memory-title, .memory-message, .memory-author { margin: 2px 0; }
 .category-ルール { border-left-color: #1E90FF; }
 .category-ありがとう { border-left-color: #32CD32; }
 .category-おめでとう { border-left-color: #FFD700; }
