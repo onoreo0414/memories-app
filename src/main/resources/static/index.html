@@ -1,8 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>思い出アプリ</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>思い出一覧</h1>
+
 <form id="memoryForm">
   <input type="date" name="date" required />
   <input type="text" name="title" placeholder="出来事" required />
   <textarea name="message" placeholder="メッセージ"></textarea>
-  <select name="author" required>
+  <select name="author">
     <option value="れお">れお</option>
     <option value="ひまり">ひまり</option>
   </select>
@@ -17,45 +28,69 @@
 
 <div id="memoryList"></div>
 
-<style>
-  body { font-family: sans-serif; padding: 10px; background: #f7f7f7; }
-  .category-group { margin-bottom: 15px; }
-  .category-title { font-weight: bold; cursor: pointer; padding: 5px; }
-  .memory-card { background: #fff; padding: 10px; margin: 5px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-  .category-約束        { border-left: 4px solid #1E90FF; }   /* 約束：落ち着いた青 */
-  .category-ありがとう  { border-left: 4px solid #32CD32; }   /* ありがとう：爽やかな緑 */
-  .category-おめでとう  { border-left: 4px solid #FFD700; }   /* おめでとう：ゴールドで祝福感 */
-  .category-ごめんなさい{ border-left: 4px solid #FF4500; }   /* ごめんなさい：強めの赤で注意感 */
-</style>
-
 <script>
 async function loadMemories() {
-  let res = await fetch('/api/memories');
-  let data = await res.json();
+  const res = await fetch('/api/memories');
+  const data = await res.json();
 
-  // カテゴリーごとにグループ化
-  let grouped = {};
+  const categories = {};
   data.forEach(m => {
-    if (!grouped[m.category]) grouped[m.category] = [];
-    grouped[m.category].push(m);
+    if (!categories[m.category]) categories[m.category] = [];
+    categories[m.category].push(m);
   });
 
-  // HTML生成
-  document.getElementById("memoryList").innerHTML = Object.keys(grouped).map(cat => `
-    <div class="category-group">
-      <div class="category-title" onclick="this.nextElementSibling.classList.toggle('hidden')">${cat}</div>
-      <div class="category-items">
-        ${grouped[cat].map(m => `
-          <div class="memory-card category-${cat}">
-            <b>${m.date} - ${m.title}</b><br>
-            ${m.message}<br>
-            <i>by ${m.author}</i>
+  const html = Object.keys(categories).map(cat => `
+    <div class="category-folder">
+      <div class="folder-header">${cat}</div>
+      <div class="folder-content">
+        ${categories[cat].map(m => `
+          <div class="memory-item category-${m.category}">
+            <div class="memory-date">${m.date}</div>
+            <div class="memory-title">${m.title}</div>
+            <div class="memory-message">${m.message}</div>
+            <div class="memory-author">by ${m.author}</div>
+            <button onclick="deleteMemory(${m.id})">削除</button>
           </div>
         `).join('')}
       </div>
     </div>
   `).join('');
+
+  document.getElementById('memoryList').innerHTML = html;
+
+  document.querySelectorAll('.folder-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const content = header.nextElementSibling;
+      content.style.display = content.style.display === 'block' ? 'none' : 'block';
+    });
+  });
 }
+
+async function deleteMemory(id) {
+  await fetch(`/api/memories/${id}`, { method: 'DELETE' });
+  loadMemories();
+}
+
+document.getElementById('memoryForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const form = e.target;
+  const memory = {
+    date: form.date.value,
+    title: form.title.value,
+    message: form.message.value,
+    author: form.author.value,
+    category: form.category.value
+  };
+  await fetch('/api/memories', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(memory)
+  });
+  form.reset();
+  loadMemories();
+});
 
 loadMemories();
 </script>
+</body>
+</html>
