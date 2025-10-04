@@ -2,7 +2,6 @@ package com.example.memories.controller;
 
 import com.example.memories.model.Memory;
 import com.example.memories.repository.MemoryRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,12 +16,11 @@ import java.util.List;
 public class MemoryController {
 
     private final MemoryRepository repository;
-
-    @Value("${memories.upload-dir:uploads}")
-    private String uploadDir;
+    private final String uploadDir = "uploads/";
 
     public MemoryController(MemoryRepository repository) {
         this.repository = repository;
+        new File(uploadDir).mkdirs(); // アップロードフォルダ作成
     }
 
     @GetMapping
@@ -31,27 +29,24 @@ public class MemoryController {
     }
 
     @PostMapping
-    public Memory create(
-            @RequestParam("date") String date,
-            @RequestParam("title") String title,
-            @RequestParam("message") String message,
-            @RequestParam("author") String author,
-            @RequestParam("photo") MultipartFile photo
-    ) throws IOException {
-        // ファイル保存
-        File dir = new File(uploadDir);
-        if (!dir.exists()) dir.mkdirs();
-
-        String filename = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
-        File dest = new File(dir, filename);
-        photo.transferTo(dest);
+    public Memory create(@RequestParam String title,
+                         @RequestParam String message,
+                         @RequestParam String author,
+                         @RequestParam String date,
+                         @RequestParam(required = false) MultipartFile photo) throws IOException {
 
         Memory memory = new Memory();
-        memory.setDate(LocalDate.parse(date));
         memory.setTitle(title);
         memory.setMessage(message);
         memory.setAuthor(author);
-        memory.setPhotoFilename(filename);
+        memory.setDate(LocalDate.parse(date));
+
+        if(photo != null && !photo.isEmpty()) {
+            String fileName = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
+            File dest = new File(uploadDir + fileName);
+            photo.transferTo(dest);
+            memory.setPhotoUrl("/uploads/" + fileName);
+        }
 
         return repository.save(memory);
     }
