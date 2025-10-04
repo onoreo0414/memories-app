@@ -14,6 +14,7 @@ public class Memory {
     private String title;
     private String message;
     private String author;
+    private String category;  
 
     // getters / setters
     public Long getId() { return id; }
