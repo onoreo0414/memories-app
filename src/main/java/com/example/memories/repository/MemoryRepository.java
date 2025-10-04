@@ -1,3 +1,4 @@
+// src/main/java/com/example/memories/repository/MemoryRepository.java
 package com.example.memories.repository;
 
 import com.example.memories.model.Memory;

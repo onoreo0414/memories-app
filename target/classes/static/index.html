@@ -1,44 +1,55 @@
-<form id="memoryForm" enctype="multipart/form-data">
-  <input type="date" name="date" required />
-  <input type="text" name="title" placeholder="出来事" required />
-  <textarea name="message" placeholder="メッセージ"></textarea>
-  <select name="author" required>
-    <option value="れお">れお</option>
-    <option value="ひまり">ひまり</option>
-  </select>
-  <input type="file" name="photo" accept="image/*" required />
-  <button type="submit">投稿</button>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>思い出アプリ</title>
+</head>
+<body>
+<h2>思い出投稿</h2>
+<form id="memoryForm">
+    <input type="date" name="date" required />
+    <input type="text" name="title" placeholder="出来事" required />
+    <textarea name="message" placeholder="メッセージ"></textarea>
+    <select name="author">
+        <option value="れお">れお</option>
+        <option value="ひまり">ひまり</option>
+    </select>
+    <input type="file" name="photo" accept="image/*" required />
+    <button type="submit">投稿</button>
 </form>
 
+<h2>思い出一覧</h2>
 <div id="memoryList"></div>
 
 <script>
-const form = document.getElementById('memoryForm');
-form.addEventListener('submit', async e => {
-  e.preventDefault();
-  const data = new FormData(form);
-  await fetch('/api/memories', { method: 'POST', body: data });
-  loadMemories();
+const form = document.getElementById("memoryForm");
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    await fetch("/api/memories", { method: "POST", body: data });
+    loadMemories();
 });
 
 async function loadMemories() {
-  const res = await fetch('/api/memories');
-  const memories = await res.json();
-  document.getElementById('memoryList').innerHTML = memories.map(m =>
-    `<div>
-      <img src="${m.photoUrl}" width="150"/><br>
-      <b>${m.date} - ${m.title}</b><br>
-      ${m.message}<br>
-      <i>by ${m.author}</i><br>
-      <button onclick="deleteMemory(${m.id})">削除</button>
-    </div>`
-  ).join('');
+    const res = await fetch("/api/memories");
+    const memories = await res.json();
+    document.getElementById("memoryList").innerHTML = memories.map(m =>
+        `<div>
+            <img src="${m.photoUrl}" width="150"><br>
+            <b>${m.date} - ${m.title}</b><br>
+            ${m.message}<br>
+            <i>by ${m.author}</i><br>
+            <button onclick="deleteMemory(${m.id})">削除</button>
+        </div>`
+    ).join('');
 }
 
 async function deleteMemory(id) {
-  await fetch('/api/memories/' + id, { method: 'DELETE' });
-  loadMemories();
+    await fetch("/api/memories/" + id, { method: "DELETE" });
+    loadMemories();
 }
 
 loadMemories();
 </script>
+</body>
+</html>

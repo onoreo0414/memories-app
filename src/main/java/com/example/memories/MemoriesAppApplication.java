@@ -1,3 +1,4 @@
+// src/main/java/com/example/memories/MemoriesAppApplication.java
 package com.example.memories;
 
 import org.springframework.boot.SpringApplication;
