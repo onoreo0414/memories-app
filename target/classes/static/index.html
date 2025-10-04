@@ -1,65 +1,100 @@
-<!-- src/main/resources/static/index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>思い出アプリ</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>思い出アプリ</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>思い出を共有しよう！</h1>
-  <form id="memoryForm">
-    <input type="date" name="date" required />
-    <input type="text" name="title" placeholder="出来事" required />
-    <textarea name="message" placeholder="メッセージ"></textarea>
-    <select name="author" required>
-      <option value="">記入者を選択</option>
-      <option value="れお">れお</option>
-      <option value="ひまり">ひまり</option>
-    </select>
-    <button type="submit">投稿</button>
-  </form>
+<h1>思い出を共有しよう！</h1>
 
-  <h2>思い出</h2>
-  <div id="memoryList"></div>
+<form id="memoryForm">
+  <input type="date" name="date" required />
+  <input type="text" name="title" placeholder="出来事" required />
+  <textarea name="message" placeholder="メッセージ"></textarea>
+  <select name="author">
+    <option value="れお">れお</option>
+    <option value="ひまり">ひまり</option>
+  </select>
+  <select name="category" required>
+    <option value="ルール">ルール</option>
+    <option value="ありがとう">ありがとう</option>
+    <option value="おめでとう">おめでとう</option>
+    <option value="ごめんなさい">ごめんなさい</option>
+  </select>
+  <button type="submit">投稿</button>
+</form>
 
-  <script>
-    async function loadMemories() {
-      let res = await fetch('/api/memories');
-      let data = await res.json();
-      document.getElementById("memoryList").innerHTML = data.map(m =>
-        `<div>
-           <b>${m.date} - ${m.title}</b><br>
-           ${m.message}<br>
-           <i>by ${m.author}</i>
-           <button onclick="deleteMemory(${m.id})">削除</button>
-           <hr>
-         </div>`).join('');
-    }
+<div id="memoryList"></div>
 
-    async function deleteMemory(id) {
-      await fetch(`/api/memories/${id}`, { method: 'DELETE' });
-      loadMemories();
-    }
+<script>
+function sanitizeCategory(cat) {
+  return cat.replace(/[^a-zA-Z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '');
+}
 
-    document.getElementById("memoryForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const form = e.target;
-      const memory = {
-        date: form.date.value,
-        title: form.title.value,
-        message: form.message.value,
-        author: form.author.value
-      };
-      await fetch('/api/memories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(memory)
-      });
-      form.reset();
-      loadMemories();
+async function loadMemories() {
+  const res = await fetch('/api/memories');
+  const data = await res.json();
+
+  const categories = {};
+  data.forEach(m => {
+    if (!categories[m.category]) categories[m.category] = [];
+    categories[m.category].push(m);
+  });
+
+  const html = Object.keys(categories).map(cat => `
+    <div class="category-folder">
+      <div class="folder-header">${cat}</div>
+      <div class="folder-content">
+        ${categories[cat].map(m => `
+          <div class="memory-item category-${sanitizeCategory(m.category)}">
+            <div class="memory-date">日付: ${m.date}</div>
+            <div class="memory-title">出来事: ${m.title}</div>
+            <div class="memory-message">内容: ${m.message}</div>
+            <div class="memory-author">記入者: ${m.author}</div>
+            <button onclick="deleteMemory(${m.id})">削除</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('memoryList').innerHTML = html;
+
+  document.querySelectorAll('.folder-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const content = header.nextElementSibling;
+      content.style.display = content.style.display === 'block' ? 'none' : 'block';
     });
+  });
+}
 
-    loadMemories();
-  </script>
+async function deleteMemory(id) {
+  await fetch(`/api/memories/${id}`, { method: 'DELETE' });
+  loadMemories();
+}
+
+document.getElementById('memoryForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const form = e.target;
+  const memory = {
+    date: form.date.value,
+    title: form.title.value,
+    message: form.message.value,
+    author: form.author.value,
+    category: form.category.value
+  };
+  await fetch('/api/memories', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(memory)
+  });
+  form.reset();
+  loadMemories();
+});
+
+loadMemories();
+</script>
 </body>
 </html>

@@ -1,89 +1,50 @@
 body {
-  font-family: 'Helvetica', 'Arial', sans-serif;
-  background-color: #f0f4f8;
-  padding: 10px;
-  margin: 0;
-}
-
-h1 {
-  text-align: center;
-  color: #333;
+  font-family: sans-serif;
+  margin: 10px;
 }
 
 form {
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
   margin-bottom: 20px;
 }
 
-form input, form textarea, form select, form button {
-  display: block;
-  width: 100%;
-  margin-bottom: 10px;
+form input, form select, form textarea, form button {
+  margin: 5px 0;
   padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-form button {
-  background-color: #1E90FF;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-form button:hover {
-  background-color: #0d74d1;
+  font-size: 1rem;
 }
 
 .category-folder {
   margin-bottom: 15px;
+  border: 1px solid #ccc;
   border-radius: 6px;
   overflow: hidden;
-  background-color: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
 .folder-header {
-  padding: 10px;
+  background-color: #f0f0f0;
+  padding: 8px;
   font-weight: bold;
   cursor: pointer;
-  background-color: #e0e0e0;
 }
 
 .folder-content {
   display: block;
-  padding: 10px;
+  padding: 8px;
 }
 
 .memory-item {
   border-left: 4px solid gray;
-  padding: 8px 10px;
-  margin-bottom: 10px;
-  background-color: #fafafa;
+  padding: 6px;
+  margin-bottom: 6px;
   border-radius: 4px;
 }
 
 .memory-date, .memory-title, .memory-message, .memory-author {
-  margin-bottom: 4px;
+  margin: 2px 0;
 }
 
-.memory-item button {
-  background-color: #FF6347;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.memory-item button:hover {
-  background-color: #e5533c;
-}
-
-/* カテゴリーごとの色 */
 .category-ルール { border-left-color: #1E90FF; }
 .category-ありがとう { border-left-color: #32CD32; }
 .category-おめでとう { border-left-color: #FFD700; }
