@@ -2,6 +2,8 @@ package com.example.memories.controller;
 
 import com.example.memories.model.Memory;
 import com.example.memories.repository.MemoryRepository;
+import com.example.memories.service.S3Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,16 +14,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/memories")
-@CrossOrigin
 public class MemoryController {
 
-    private final MemoryRepository repository;
-    private final String uploadDir = "uploads/";
+    @Autowired
+    private MemoryRepository repository;
 
-    public MemoryController(MemoryRepository repository) {
-        this.repository = repository;
-        new File(uploadDir).mkdirs(); // アップロードフォルダ作成
-    }
+    @Autowired
+    private S3Service s3Service;
+
+    private final String bucket = System.getenv("S3_BUCKET");
 
     @GetMapping
     public List<Memory> getAll() {
@@ -29,24 +30,25 @@ public class MemoryController {
     }
 
     @PostMapping
-    public Memory create(@RequestParam String title,
+    public Memory create(@RequestParam String author,
+                         @RequestParam String title,
                          @RequestParam String message,
-                         @RequestParam String author,
                          @RequestParam String date,
-                         @RequestParam(required = false) MultipartFile photo) throws IOException {
+                         @RequestParam MultipartFile photo) throws IOException {
+
+        // 一時的にローカル保存
+        File tmpFile = File.createTempFile("upload-", photo.getOriginalFilename());
+        photo.transferTo(tmpFile);
+
+        // S3にアップロード
+        String s3Url = s3Service.uploadFile(bucket, photo.getOriginalFilename(), tmpFile.getAbsolutePath());
 
         Memory memory = new Memory();
+        memory.setAuthor(author);
         memory.setTitle(title);
         memory.setMessage(message);
-        memory.setAuthor(author);
         memory.setDate(LocalDate.parse(date));
-
-        if(photo != null && !photo.isEmpty()) {
-            String fileName = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
-            File dest = new File(uploadDir + fileName);
-            photo.transferTo(dest);
-            memory.setPhotoUrl("/uploads/" + fileName);
-        }
+        memory.setPhotoUrl(s3Url);
 
         return repository.save(memory);
     }

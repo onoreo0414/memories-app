@@ -5,17 +5,18 @@ import java.time.LocalDate;
 
 @Entity
 public class Memory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String author;
     private LocalDate date;
     private String title;
     private String message;
-    private String author;
     private String photoUrl;
 
-    // Getter / Setter
+    // getter / setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public LocalDate getDate() { return date; }
