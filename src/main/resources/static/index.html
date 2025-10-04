@@ -9,6 +9,7 @@
   <select name="category" required>
     <option value="約束">約束</option>
     <option value="ありがとう">ありがとう</option>
+    <option value="おめでとう">おめでとう</option>
     <option value="ごめんなさい">ごめんなさい</option>
   </select>
   <button type="submit">投稿</button>
@@ -21,9 +22,10 @@
   .category-group { margin-bottom: 15px; }
   .category-title { font-weight: bold; cursor: pointer; padding: 5px; }
   .memory-card { background: #fff; padding: 10px; margin: 5px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-  .category-約束 { border-left: 4px solid #1E90FF; }
-  .category-ありがとう { border-left: 4px solid #32CD32; }
-  .category-ごめんなさい { border-left: 4px solid #FF6347; }
+  .category-約束        { border-left: 4px solid #1E90FF; }   /* 約束：落ち着いた青 */
+  .category-ありがとう  { border-left: 4px solid #32CD32; }   /* ありがとう：爽やかな緑 */
+  .category-おめでとう  { border-left: 4px solid #FFD700; }   /* おめでとう：ゴールドで祝福感 */
+  .category-ごめんなさい{ border-left: 4px solid #FF4500; }   /* ごめんなさい：強めの赤で注意感 */
 </style>
 
 <script>
