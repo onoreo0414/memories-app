@@ -1,65 +1,82 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>思い出アプリ</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+    input, select, textarea, button { display: block; margin: 5px 0; padding: 5px; width: 100%; }
+    #memoryList div { border: 1px solid #ccc; padding: 10px; margin: 5px 0; border-radius: 5px; }
+    img { max-width: 100%; height: auto; border-radius: 5px; }
+    button { width: auto; margin-top: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>思い出アプリ</h1>
 
-    <groupId>com.example</groupId>
-    <artifactId>memories-app</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+  <form id="memoryForm">
+    <input type="date" name="date" required />
+    <input type="text" name="title" placeholder="出来事" required />
+    <textarea name="message" placeholder="メッセージ"></textarea>
+    
+    <select name="author" required>
+      <option value="れお">れお</option>
+      <option value="ひまり">ひまり</option>
+    </select>
+    
+    <select name="photoUrl">
+      <option value="/images/album1.jpg">写真1</option>
+      <option value="/images/album2.jpg">写真2</option>
+      <option value="/images/album3.jpg">写真3</option>
+    </select>
+    
+    <button type="submit">投稿</button>
+  </form>
 
-    <!-- ✅ Spring Boot の親POMを指定 -->
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.4</version> <!-- 最新安定版に調整 -->
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+  <h2>思い出一覧</h2>
+  <div id="memoryList"></div>
 
-    <properties>
-        <java.version>17</java.version>
-    </properties>
+  <script>
+    async function loadMemories() {
+      let res = await fetch('/api/memories');
+      let data = await res.json();
+      document.getElementById("memoryList").innerHTML = data.map(m =>
+        `<div>
+           <img src="${m.photoUrl}" /><br>
+           <b>${m.date} - ${m.title}</b><br>
+           ${m.message}<br>
+           <i>by ${m.author}</i><br>
+           <button onclick="deleteMemory(${m.id})">削除</button>
+         </div>`
+      ).join('');
+    }
 
-    <dependencies>
-        <!-- Web アプリケーション -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+    async function deleteMemory(id) {
+      if(!confirm('本当に削除しますか？')) return;
+      await fetch('/api/memories/' + id, { method: 'DELETE' });
+      loadMemories();
+    }
 
-        <!-- DB(JPA + H2) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+    document.getElementById('memoryForm').onsubmit = async function(e) {
+      e.preventDefault();
+      let form = e.target;
+      let data = {
+        date: form.date.value,
+        title: form.title.value,
+        message: form.message.value,
+        author: form.author.value,
+        photoUrl: form.photoUrl.value
+      };
+      await fetch('/api/memories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      form.reset();
+      loadMemories();
+    };
 
-        <!-- JSON処理 -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-
-        <!-- テスト -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
-</project>
+    loadMemories();
+  </script>
+</body>
+</html>
