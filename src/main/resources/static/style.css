@@ -1,9 +1,8 @@
 body {
-  font-family: "Helvetica Neue", sans-serif;
-  max-width: 480px;
-  margin: 0 auto;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  background-color: #f0f4f8;
   padding: 10px;
-  background-color: #f9f9f9;
+  margin: 0;
 }
 
 h1 {
@@ -12,43 +11,46 @@ h1 {
 }
 
 form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   margin-bottom: 20px;
 }
 
-input, textarea, select, button {
+form input, form textarea, form select, form button {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
   padding: 8px;
-  border-radius: 5px;
+  border-radius: 4px;
   border: 1px solid #ccc;
-  font-size: 1em;
 }
 
-button {
+form button {
   background-color: #1E90FF;
   color: white;
   border: none;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #0d6efd;
+form button:hover {
+  background-color: #0d74d1;
 }
 
 .category-folder {
   margin-bottom: 15px;
-  background-color: #fff;
-  border-radius: 5px;
+  border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
 .folder-header {
   padding: 10px;
-  background-color: #eee;
-  cursor: pointer;
   font-weight: bold;
+  cursor: pointer;
+  background-color: #e0e0e0;
 }
 
 .folder-content {
@@ -57,34 +59,32 @@ button:hover {
 }
 
 .memory-item {
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-  margin-bottom: 8px;
-  border-left: 4px solid transparent;
+  border-left: 4px solid gray;
+  padding: 8px 10px;
+  margin-bottom: 10px;
   background-color: #fafafa;
   border-radius: 4px;
 }
 
-/* カテゴリー色分け */
+.memory-date, .memory-title, .memory-message, .memory-author {
+  margin-bottom: 4px;
+}
+
+.memory-item button {
+  background-color: #FF6347;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.memory-item button:hover {
+  background-color: #e5533c;
+}
+
+/* カテゴリーごとの色 */
 .category-ルール { border-left-color: #1E90FF; }
 .category-ありがとう { border-left-color: #32CD32; }
 .category-おめでとう { border-left-color: #FFD700; }
-.category-ごめんなさい { border-left-color: #FF4500; }
-
-.memory-date {
-  font-size: 0.8em;
-  color: #555;
-}
-.memory-title {
-  font-weight: bold;
-  margin-top: 2px;
-}
-.memory-message {
-  margin-top: 2px;
-}
-.memory-author {
-  font-size: 0.8em;
-  color: #666;
-  margin-top: 2px;
-}
+.category-ごめんなさい { border-left-color: #FF6347; }

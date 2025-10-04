@@ -29,9 +29,8 @@
 <div id="memoryList"></div>
 
 <script>
-// カテゴリー値を安全にクラス名として変換
 function sanitizeCategory(cat) {
-  return cat.replace(/[^a-zA-Z0-9_-]/g, "_");
+  return cat.replace(/[^a-zA-Z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '');
 }
 
 async function loadMemories() {
@@ -50,10 +49,10 @@ async function loadMemories() {
       <div class="folder-content">
         ${categories[cat].map(m => `
           <div class="memory-item category-${sanitizeCategory(m.category)}">
-            <div class="memory-date">${m.date}</div>
-            <div class="memory-title">${m.title}</div>
-            <div class="memory-message">${m.message}</div>
-            <div class="memory-author">by ${m.author}</div>
+            <div class="memory-date">日付: ${m.date}</div>
+            <div class="memory-title">出来事: ${m.title}</div>
+            <div class="memory-message">内容: ${m.message}</div>
+            <div class="memory-author">記入者: ${m.author}</div>
             <button onclick="deleteMemory(${m.id})">削除</button>
           </div>
         `).join('')}
