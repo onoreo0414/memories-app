@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>思い出一覧</h1>
+<h1>思い出を共有しよう！</h1>
 
 <form id="memoryForm">
   <input type="date" name="date" required />
@@ -18,7 +18,7 @@
     <option value="ひまり">ひまり</option>
   </select>
   <select name="category" required>
-    <option value="約束">約束</option>
+    <option value="ルール">ルール</option>
     <option value="ありがとう">ありがとう</option>
     <option value="おめでとう">おめでとう</option>
     <option value="ごめんなさい">ごめんなさい</option>
@@ -29,6 +29,11 @@
 <div id="memoryList"></div>
 
 <script>
+// カテゴリー値を安全にクラス名として変換
+function sanitizeCategory(cat) {
+  return cat.replace(/[^a-zA-Z0-9_-]/g, "_");
+}
+
 async function loadMemories() {
   const res = await fetch('/api/memories');
   const data = await res.json();
@@ -44,7 +49,7 @@ async function loadMemories() {
       <div class="folder-header">${cat}</div>
       <div class="folder-content">
         ${categories[cat].map(m => `
-          <div class="memory-item category-${m.category}">
+          <div class="memory-item category-${sanitizeCategory(m.category)}">
             <div class="memory-date">${m.date}</div>
             <div class="memory-title">${m.title}</div>
             <div class="memory-message">${m.message}</div>
