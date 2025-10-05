@@ -26,55 +26,15 @@
   <button type="submit">投稿</button>
 </form>
 
-<div id="memoryList"></div>
+<h2>カテゴリ一覧</h2>
+<ul id="categoryLinks">
+  <li><a href="category.html?cat=ルール">ルール</a></li>
+  <li><a href="category.html?cat=ありがとう">ありがとう</a></li>
+  <li><a href="category.html?cat=おめでとう">おめでとう</a></li>
+  <li><a href="category.html?cat=ごめんなさい">ごめんなさい</a></li>
+</ul>
 
 <script>
-function sanitizeCategory(cat) {
-  return cat.replace(/[^a-zA-Z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '');
-}
-
-async function loadMemories() {
-  const res = await fetch('/api/memories');
-  const data = await res.json();
-
-  const categories = {};
-  data.forEach(m => {
-    if (!categories[m.category]) categories[m.category] = [];
-    categories[m.category].push(m);
-  });
-
-  const html = Object.keys(categories).map(cat => `
-    <div class="category-folder">
-      <div class="folder-header">${cat}</div>
-      <div class="folder-content">
-        ${categories[cat].map(m => `
-          <div class="memory-item category-${sanitizeCategory(m.category)}">
-            <div class="memory-date">日付: ${m.date}</div>
-            <div class="memory-title">出来事: ${m.title}</div>
-            <div class="memory-message">内容: ${m.message}</div>
-            <div class="memory-author">記入者: ${m.author}</div>
-            <button onclick="deleteMemory(${m.id})">削除</button>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
-
-  document.getElementById('memoryList').innerHTML = html;
-
-  document.querySelectorAll('.folder-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const content = header.nextElementSibling;
-      content.style.display = content.style.display === 'block' ? 'none' : 'block';
-    });
-  });
-}
-
-async function deleteMemory(id) {
-  await fetch(`/api/memories/${id}`, { method: 'DELETE' });
-  loadMemories();
-}
-
 document.getElementById('memoryForm').addEventListener('submit', async e => {
   e.preventDefault();
   const form = e.target;
@@ -91,10 +51,8 @@ document.getElementById('memoryForm').addEventListener('submit', async e => {
     body: JSON.stringify(memory)
   });
   form.reset();
-  loadMemories();
+  alert('投稿しました！');
 });
-
-loadMemories();
 </script>
 </body>
 </html>
