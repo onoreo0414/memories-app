@@ -1,68 +1,80 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>カテゴリ表示</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<h1 id="categoryTitle"></h1>
-<button onclick="location.href='index.html'">トップページへ戻る</button>
+body {
+  font-family: sans-serif;
+  margin: 10px;
+  background-color: #fafafa;
+}
 
-<div id="memoryList"></div>
+h1, h2 {
+  text-align: center;
+  color: #333;
+}
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  import { getFirestore, collection, getDocs, deleteDoc, doc } 
-    from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyD40Y0Mf6YvfCJNgVpDc4AvVuUuYbQJz54",
-    authDomain: "memories-app-7becd.firebaseapp.com",
-    projectId: "memories-app-7becd",
-    storageBucket: "memories-app-7becd.firebasestorage.app",
-    messagingSenderId: "211989248853",
-    appId: "1:211989248853:web:159f90ff42df5c38130ddc",
-    measurementId: "G-8199QBEJJV"
-  };
+form input,
+form select,
+form textarea,
+form button {
+  margin: 5px 0;
+  padding: 8px;
+  font-size: 1rem;
+}
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+ul#categoryLinks {
+  list-style: none;
+  padding: 0;
+  text-align: center;
+}
 
-  const params = new URLSearchParams(window.location.search);
-  const category = params.get('cat');
-  document.getElementById('categoryTitle').innerText = category + "の思い出";
+ul#categoryLinks li {
+  margin: 8px 0;
+}
 
-  async function loadMemories() {
-    const snapshot = await getDocs(collection(db, "memories"));
-    const allData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const filtered = allData.filter(m => m.category.trim() === category.trim());
+ul#categoryLinks a {
+  text-decoration: none;
+  color: #007BFF;
+}
 
-    if (filtered.length === 0) {
-      document.getElementById('memoryList').innerHTML = "<p>このカテゴリの投稿はまだありません。</p>";
-      return;
-    }
+ul#categoryLinks a:hover {
+  text-decoration: underline;
+}
 
-    const html = filtered.map(m => `
-      <div class="memory-item category-${encodeURIComponent(m.category)}">
-        <div class="memory-date">📅 ${m.date}</div>
-        <div class="memory-title">📝 ${m.title}</div>
-        <div class="memory-message">${m.message}</div>
-        <div class="memory-author">👤 by ${m.author}</div>
-        <button onclick="deleteMemory('${m.id}')">削除</button>
-      </div>
-    `).join('');
+.memory-item {
+  background-color: white;
+  border-left: 6px solid gray;
+  padding: 10px;
+  margin: 10px auto;
+  width: 80%;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 
-    document.getElementById('memoryList').innerHTML = html;
-  }
+.memory-date, .memory-title, .memory-message, .memory-author {
+  margin: 4px 0;
+}
 
-  window.deleteMemory = async (id) => {
-    await deleteDoc(doc(db, "memories", id));
-    loadMemories();
-  };
+/* 各カテゴリ色分け */
+.category-%E3%83%AB%E3%83%BC%E3%83%AB { border-left-color: #1E90FF; } /* ルール */
+.category-%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86 { border-left-color: #32CD32; } /* ありがとう */
+.category-%E3%81%8A%E3%82%81%E3%81%A7%E3%81%A8%E3%81%86 { border-left-color: #FFD700; } /* おめでとう */
+.category-%E3%81%94%E3%82%81%E3%82%93%E3%81%AA%E3%81%95%E3%81%84 { border-left-color: #FF6347; } /* ごめんなさい */
 
-  loadMemories();
-</script>
-</body>
-</html>
+button {
+  background-color: #f04a4a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #c0392b;
+}
