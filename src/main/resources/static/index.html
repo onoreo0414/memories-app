@@ -35,21 +35,25 @@
 </ul>
 
 <script>
-document.getElementById('memoryForm').addEventListener('submit', async e => {
+// localStorageに投稿を保存
+document.getElementById('memoryForm').addEventListener('submit', e => {
   e.preventDefault();
   const form = e.target;
+
   const memory = {
+    id: Date.now(), // 一意のID
     date: form.date.value,
     title: form.title.value,
     message: form.message.value,
     author: form.author.value,
     category: form.category.value
   };
-  await fetch('/api/memories', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(memory)
-  });
+
+  // 既存データを取得して追加
+  const existing = JSON.parse(localStorage.getItem('memories') || '[]');
+  existing.push(memory);
+  localStorage.setItem('memories', JSON.stringify(existing));
+
   form.reset();
   alert('投稿しました！');
 });
