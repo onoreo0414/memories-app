@@ -34,27 +34,26 @@
   <li><a href="category.html?cat=ごめんなさい">ごめんなさい</a></li>
 </ul>
 
-<!-- ✅ Firebase接続とFirestore保存 -->
+<!-- 🔹 Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } 
-    from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyD40Y0Mf6YvfCJNgVpDc4AvVuUuYbQJz54",
-    authDomain: "memories-app-7becd.firebaseapp.com",
-    projectId: "memories-app-7becd",
-    storageBucket: "memories-app-7becd.firebasestorage.app",
-    messagingSenderId: "211989248853",
-    appId: "1:211989248853:web:159f90ff42df5c38130ddc",
-    measurementId: "G-8199QBEJJV"
+    apiKey: "AIzaSyDgOOxvkvnel579hnfF8DU508XKTZyj3cw",
+    authDomain: "memories-share-a44a2.firebaseapp.com",
+    projectId: "memories-share-a44a2",
+    storageBucket: "memories-share-a44a2.firebasestorage.app",
+    messagingSenderId: "868430924607",
+    appId: "1:868430924607:web:e93eb36867bb76a2d1618a",
+    measurementId: "G-4H5D3VHPSG"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // フォーム送信処理
-  document.getElementById('memoryForm').addEventListener('submit', async (e) => {
+  // 🔹 Firestore に投稿保存
+  document.getElementById('memoryForm').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
 
@@ -69,11 +68,11 @@
 
     try {
       await addDoc(collection(db, "memories"), memory);
-      alert("投稿しました！");
+      alert("クラウドに投稿しました！");
       form.reset();
     } catch (error) {
-      console.error("投稿に失敗しました:", error);
-      alert("投稿に失敗しました。");
+      console.error("保存エラー:", error);
+      alert("投稿に失敗しました。コンソールを確認してください。");
     }
   });
 </script>

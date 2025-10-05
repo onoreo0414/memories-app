@@ -12,48 +12,66 @@
 
 <div id="memoryList"></div>
 
-<script>
-const params = new URLSearchParams(window.location.search);
-const category = params.get('cat');
-document.getElementById('categoryTitle').innerText = category + "の思い出";
+<script type="module">
+  // Firebase SDK のインポート
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, where, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-// データ読み込み
-function loadMemories() {
-  const data = JSON.parse(localStorage.getItem('memories') || '[]');
-  const filtered = data.filter(m => m.category.trim() === category.trim());
+  // Firebase 初期化
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-  if (filtered.length === 0) {
-    document.getElementById('memoryList').innerHTML = "<p>このカテゴリの投稿はまだありません。</p>";
-    return;
+  // URL からカテゴリ取得
+  const params = new URLSearchParams(window.location.search);
+  const category = params.get('cat');
+  document.getElementById('categoryTitle').innerText = category + "の思い出";
+
+  // 安全なクラス名に変換
+  function sanitizeCategory(cat) {
+    return encodeURIComponent(cat);
   }
 
-  const html = filtered.map(m => `
-    <div class="memory-item category-${sanitizeCategory(m.category)}">
-      <div class="memory-date">📅 ${m.date}</div>
-      <div class="memory-title">📝 ${m.title}</div>
-      <div class="memory-message">${m.message}</div>
-      <div class="memory-author">👤 by ${m.author}</div>
-      <button onclick="deleteMemory(${m.id})">削除</button>
-    </div>
-  `).join('');
+  // 投稿削除
+  async function deleteMemory(id) {
+    await deleteDoc(doc(db, "memories", id));
+    loadMemories();
+  }
 
-  document.getElementById('memoryList').innerHTML = html;
-}
+  // データ読み込み
+  async function loadMemories() {
+    const q = query(collection(db, "memories"), where("category", "==", category));
+    const querySnapshot = await getDocs(q);
 
-// 安全なクラス名に変換
-function sanitizeCategory(cat) {
-  return encodeURIComponent(cat);
-}
+    if (querySnapshot.empty) {
+      document.getElementById('memoryList').innerHTML = "<p>このカテゴリの投稿はまだありません。</p>";
+      return;
+    }
 
-// 投稿削除
-function deleteMemory(id) {
-  let data = JSON.parse(localStorage.getItem('memories') || '[]');
-  data = data.filter(m => m.id !== id);
-  localStorage.setItem('memories', JSON.stringify(data));
+    const html = querySnapshot.docs.map(docSnap => {
+      const m = docSnap.data();
+      return `
+        <div class="memory-item category-${sanitizeCategory(m.category)}">
+          <div class="memory-date">📅 ${m.date}</div>
+          <div class="memory-title">📝 ${m.title}</div>
+          <div class="memory-message">${m.message}</div>
+          <div class="memory-author">👤 by ${m.author}</div>
+          <button onclick="deleteMemory('${docSnap.id}')">削除</button>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('memoryList').innerHTML = html;
+  }
+
   loadMemories();
-}
-
-loadMemories();
 </script>
 </body>
 </html>
