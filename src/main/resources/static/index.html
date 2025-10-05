@@ -34,29 +34,48 @@
   <li><a href="category.html?cat=ごめんなさい">ごめんなさい</a></li>
 </ul>
 
-<script>
-// localStorageに投稿を保存
-document.getElementById('memoryForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const form = e.target;
+<!-- ✅ Firebase接続とFirestore保存 -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } 
+    from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-  const memory = {
-    id: Date.now(), // 一意のID
-    date: form.date.value,
-    title: form.title.value,
-    message: form.message.value,
-    author: form.author.value,
-    category: form.category.value
+  const firebaseConfig = {
+    apiKey: "AIzaSyD40Y0Mf6YvfCJNgVpDc4AvVuUuYbQJz54",
+    authDomain: "memories-app-7becd.firebaseapp.com",
+    projectId: "memories-app-7becd",
+    storageBucket: "memories-app-7becd.firebasestorage.app",
+    messagingSenderId: "211989248853",
+    appId: "1:211989248853:web:159f90ff42df5c38130ddc",
+    measurementId: "G-8199QBEJJV"
   };
 
-  // 既存データを取得して追加
-  const existing = JSON.parse(localStorage.getItem('memories') || '[]');
-  existing.push(memory);
-  localStorage.setItem('memories', JSON.stringify(existing));
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-  form.reset();
-  alert('投稿しました！');
-});
+  // フォーム送信処理
+  document.getElementById('memoryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+
+    const memory = {
+      date: form.date.value,
+      title: form.title.value,
+      message: form.message.value,
+      author: form.author.value,
+      category: form.category.value,
+      createdAt: new Date()
+    };
+
+    try {
+      await addDoc(collection(db, "memories"), memory);
+      alert("投稿しました！");
+      form.reset();
+    } catch (error) {
+      console.error("投稿に失敗しました:", error);
+      alert("投稿に失敗しました。");
+    }
+  });
 </script>
 </body>
 </html>

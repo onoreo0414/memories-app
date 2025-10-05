@@ -13,26 +13,26 @@
 <div id="memoryList"></div>
 
 <script>
-function sanitizeCategory(cat) {
-  return cat.replace(/\s/g, '');
-}
-
-// URLからカテゴリを取得
 const params = new URLSearchParams(window.location.search);
 const category = params.get('cat');
 document.getElementById('categoryTitle').innerText = category + "の思い出";
 
-async function loadMemories() {
-  const res = await fetch('/api/memories');
-  const data = await res.json();
-  const filtered = data.filter(m => m.category === category);
+// データ読み込み
+function loadMemories() {
+  const data = JSON.parse(localStorage.getItem('memories') || '[]');
+  const filtered = data.filter(m => m.category.trim() === category.trim());
+
+  if (filtered.length === 0) {
+    document.getElementById('memoryList').innerHTML = "<p>このカテゴリの投稿はまだありません。</p>";
+    return;
+  }
 
   const html = filtered.map(m => `
     <div class="memory-item category-${sanitizeCategory(m.category)}">
-      <div class="memory-date">${m.date}</div>
-      <div class="memory-title">${m.title}</div>
+      <div class="memory-date">📅 ${m.date}</div>
+      <div class="memory-title">📝 ${m.title}</div>
       <div class="memory-message">${m.message}</div>
-      <div class="memory-author">by ${m.author}</div>
+      <div class="memory-author">👤 by ${m.author}</div>
       <button onclick="deleteMemory(${m.id})">削除</button>
     </div>
   `).join('');
@@ -40,8 +40,16 @@ async function loadMemories() {
   document.getElementById('memoryList').innerHTML = html;
 }
 
-async function deleteMemory(id) {
-  await fetch(`/api/memories/${id}`, { method: 'DELETE' });
+// 安全なクラス名に変換
+function sanitizeCategory(cat) {
+  return encodeURIComponent(cat);
+}
+
+// 投稿削除
+function deleteMemory(id) {
+  let data = JSON.parse(localStorage.getItem('memories') || '[]');
+  data = data.filter(m => m.id !== id);
+  localStorage.setItem('memories', JSON.stringify(data));
   loadMemories();
 }
 
