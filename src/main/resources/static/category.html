@@ -36,10 +36,10 @@
     return encodeURIComponent(cat);
   }
 
-  // 投稿削除
-  async function deleteMemory(id) {
+  // 投稿削除（グローバルに公開）
+  window.deleteMemory = async function(id) {
     await deleteDoc(doc(db, "memories", id));
-    await loadMemories(); // 削除後にリスト再描画
+    await loadMemories();
   }
 
   // データ読み込み
