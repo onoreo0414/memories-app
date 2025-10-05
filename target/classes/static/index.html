@@ -68,7 +68,7 @@
 
     try {
       await addDoc(collection(db, "memories"), memory);
-      alert("クラウドに投稿しました！");
+      alert("投稿しました！");
       form.reset();
     } catch (error) {
       console.error("保存エラー:", error);

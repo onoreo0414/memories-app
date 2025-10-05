@@ -13,30 +13,25 @@
 <div id="memoryList"></div>
 
 <script type="module">
-  // Firebase SDK のインポート
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
   import { getFirestore, collection, getDocs, query, where, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-  // Firebase 初期化
   const firebaseConfig = {
-  apiKey: "AIzaSyDgOOxvkvnel579hnfF8DU508XKTZyj3cw",
-  authDomain: "memories-share-a44a2.firebaseapp.com",
-  projectId: "memories-share-a44a2",
-  storageBucket: "memories-share-a44a2.firebasestorage.app",
-  messagingSenderId: "868430924607",
-  appId: "1:868430924607:web:e93eb36867bb76a2d1618a",
-  measurementId: "G-4H5D3VHPSG"
-};
-  
+    apiKey: "AIzaSyDgOOxvkvnel579hnfF8DU508XKTZyj3cw",
+    authDomain: "memories-share-a44a2.firebaseapp.com",
+    projectId: "memories-share-a44a2",
+    storageBucket: "memories-share-a44a2.firebasestorage.app",
+    messagingSenderId: "868430924607",
+    appId: "1:868430924607:web:e93eb36867bb76a2d1618a",
+    measurementId: "G-4H5D3VHPSG"
+  };
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // URL からカテゴリ取得
   const params = new URLSearchParams(window.location.search);
   const category = params.get('cat');
   document.getElementById('categoryTitle').innerText = category + "の思い出";
 
-  // 安全なクラス名に変換
   function sanitizeCategory(cat) {
     return encodeURIComponent(cat);
   }
@@ -44,12 +39,12 @@
   // 投稿削除
   async function deleteMemory(id) {
     await deleteDoc(doc(db, "memories", id));
-    loadMemories();
+    await loadMemories(); // 削除後にリスト再描画
   }
 
   // データ読み込み
   async function loadMemories() {
-    const q = query(collection(db, "memories"), where("category", "==", category));
+    const q = query(collection(db, "memories"), where("category", "==", category.trim()));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
